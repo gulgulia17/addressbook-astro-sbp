@@ -8,7 +8,10 @@ export default defineConfig({
   adapter: node({
     mode: 'standalone'
   }),
-
+  server: {
+    port: 80,
+    host: true  // This allows external connections
+  },
   redirects: {
     '/dashboard': '/',
     '/login': '/auth/login',
