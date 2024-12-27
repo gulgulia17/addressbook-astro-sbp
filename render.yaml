@@ -1,0 +1,4 @@
+"scripts": {
+  "start": "node dist/server/entry.mjs",
+  "build": "astro build"
+}

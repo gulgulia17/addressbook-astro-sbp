@@ -1,11 +1,207 @@
 ---
-import Welcome from '../components/Welcome.astro';
+import { isAuthenticated } from '../middleware/auth';
 import Layout from '../layouts/Layout.astro';
+import { config } from '../config';
 
-// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
-// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
+const user = await isAuthenticated(Astro);
+
+if (!user) {
+  return Astro.redirect('/auth/login');
+}
 ---
 
-<Layout>
-	<Welcome />
+<Layout title="Dashboard">
+  <div class="min-h-screen bg-gray-50">
+    <!-- Top Navigation -->
+    <nav class="bg-white shadow-sm">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between h-16">
+          <!-- Left side -->
+          <div class="flex items-center">
+            <div class="flex-shrink-0 flex items-center">
+              <h1 class="text-xl font-bold text-indigo-600">{config.app.name}</h1>
+            </div>
+            <div class="hidden sm:ml-6 sm:flex sm:space-x-8">
+              <a href="/" class="border-indigo-500 text-gray-900 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                Dashboard
+              </a>
+              <a href="#" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                Projects
+              </a>
+              <a href="#" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                Reports
+              </a>
+            </div>
+          </div>
+          
+          <!-- Right side -->
+          <div class="flex items-center space-x-4">
+            <button type="button" class="bg-white p-1 rounded-full text-gray-400 hover:text-gray-500">
+              <span class="sr-only">View notifications</span>
+              <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
+              </svg>
+            </button>
+
+            <!-- Profile dropdown -->
+            <div class="relative flex items-center">
+              <div class="flex items-center">
+                <button type="button" class="bg-indigo-100 flex text-sm rounded-full focus:outline-none" id="user-menu-button">
+                  <span class="sr-only">Open user menu</span>
+                  <div class="h-8 w-8 rounded-full flex items-center justify-center bg-indigo-500 text-white font-medium">
+                    {user.name ? user.name[0].toUpperCase() : user.email[0].toUpperCase()}
+                  </div>
+                </button>
+                <div class="ml-3">
+                  <div class="text-sm font-medium text-gray-700">{user.name || user.email}</div>
+                  <div class="text-xs text-gray-500">{user.role}</div>
+                </div>
+              </div>
+              <button id="logoutBtn" class="ml-4 text-sm text-red-600 hover:text-red-800 font-medium">
+                Logout
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <main class="py-6">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Welcome Section -->
+        <div class="mb-8">
+          <h2 class="text-2xl font-bold text-gray-900">Welcome back, {user.name || 'User'}!</h2>
+          <p class="mt-1 text-sm text-gray-500">Here's what's happening with your projects today.</p>
+        </div>
+
+        <!-- Stats Section -->
+        <div class="mt-8">
+          <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
+            <!-- Stat card 1 -->
+            <div class="bg-white overflow-hidden shadow rounded-lg">
+              <div class="p-5">
+                <div class="flex items-center">
+                  <div class="flex-shrink-0">
+                    <svg class="h-6 w-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                    </svg>
+                  </div>
+                  <div class="ml-5 w-0 flex-1">
+                    <dl>
+                      <dt class="text-sm font-medium text-gray-500 truncate">Total Projects</dt>
+                      <dd class="text-lg font-bold text-gray-900">12</dd>
+                    </dl>
+                  </div>
+                </div>
+              </div>
+              <div class="bg-gray-50 px-5 py-3">
+                <div class="text-sm">
+                  <a href="#" class="font-medium text-indigo-600 hover:text-indigo-500">View all</a>
+                </div>
+              </div>
+            </div>
+
+            <!-- Stat card 2 -->
+            <div class="bg-white overflow-hidden shadow rounded-lg">
+              <div class="p-5">
+                <div class="flex items-center">
+                  <div class="flex-shrink-0">
+                    <svg class="h-6 w-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                  </div>
+                  <div class="ml-5 w-0 flex-1">
+                    <dl>
+                      <dt class="text-sm font-medium text-gray-500 truncate">In Progress</dt>
+                      <dd class="text-lg font-bold text-gray-900">4</dd>
+                    </dl>
+                  </div>
+                </div>
+              </div>
+              <div class="bg-gray-50 px-5 py-3">
+                <div class="text-sm">
+                  <a href="#" class="font-medium text-indigo-600 hover:text-indigo-500">View details</a>
+                </div>
+              </div>
+            </div>
+
+            <!-- Additional Cards -->
+            <div class="bg-white overflow-hidden shadow rounded-lg">
+              <div class="p-5">
+                <div class="flex items-center">
+                  <div class="flex-shrink-0">
+                    <svg class="h-6 w-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
+                    </svg>
+                  </div>
+                  <div class="ml-5 w-0 flex-1">
+                    <dl>
+                      <dt class="text-sm font-medium text-gray-500 truncate">Completed</dt>
+                      <dd class="text-lg font-bold text-gray-900">8</dd>
+                    </dl>
+                  </div>
+                </div>
+              </div>
+              <div class="bg-gray-50 px-5 py-3">
+                <div class="text-sm">
+                  <a href="#" class="font-medium text-indigo-600 hover:text-indigo-500">View completed</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recent Activity Section -->
+        <div class="mt-8">
+          <div class="bg-white shadow rounded-lg">
+            <div class="px-4 py-5 border-b border-gray-200 sm:px-6">
+              <h3 class="text-lg leading-6 font-medium text-gray-900">
+                Recent Activity
+              </h3>
+            </div>
+            <ul class="divide-y divide-gray-200">
+              <li class="p-4 hover:bg-gray-50">
+                <div class="flex items-center space-x-4">
+                  <div class="flex-shrink-0">
+                    <svg class="h-6 w-6 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                  </div>
+                  <div class="flex-1 min-w-0">
+                    <p class="text-sm font-medium text-gray-900">Project XYZ completed</p>
+                    <p class="text-sm text-gray-500">Completed by John Doe</p>
+                  </div>
+                  <div class="text-sm text-gray-500">2h ago</div>
+                </div>
+              </li>
+              <!-- Add more activity items as needed -->
+            </ul>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
 </Layout>
+
+<script>
+  const logoutBtn = document.getElementById('logoutBtn');
+  
+  logoutBtn?.addEventListener('click', async () => {
+    try {
+      const response = await fetch('/api/logout', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+
+      const data = await response.json();
+      
+      if (data.success) {
+        window.location.href = '/auth/login';
+      }
+    } catch (error) {
+      console.error('Logout error:', error);
+    }
+  });
+</script>
